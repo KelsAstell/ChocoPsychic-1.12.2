@@ -86,46 +86,13 @@ public class InWorldCrafting {
     private static boolean consumeBlocks (PlayerInteractEvent.LeftClickBlock event,BlockPos pos, Block blocks, double chance){
         int count=0;
         while (count<8){
-            if(event.getWorld().getTotalWorldTime() % 10 == 0){
-                if (count < 3){
-                    for (int i=-1;i<2;i++){
-                        if (event.getWorld().getBlockState(new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()-1)).getBlock()==blocks){
-                            event.getWorld().playEvent(2001, new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()-1), Block.getStateId(blocks.getDefaultState()));
+            for (int i=-1;i<2;i++){
+                for (int j=-1;j<2;j++){
+                    if (!(i==0 && j==0)){
+                        if (event.getWorld().getBlockState(new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()+j)).getBlock()==blocks){
+                            event.getWorld().playEvent(2001, new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()+j), Block.getStateId(blocks.getDefaultState()));
                             if (shouldBreak(chance)){
-                                event.getWorld().setBlockState(new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()-1), Blocks.AIR.getDefaultState());
-                            }
-                            count++;
-                        }else{
-
-                            return false;
-                        }
-                    }
-                }else if (count==3){
-                    if (event.getWorld().getBlockState(new BlockPos(pos.getX()+1,pos.getY(), pos.getZ())).getBlock()==blocks){
-                        event.getWorld().playEvent(2001, new BlockPos(pos.getX()+1,pos.getY(), pos.getZ()), Block.getStateId(blocks.getDefaultState()));
-                        if (shouldBreak(chance)){
-                            event.getWorld().setBlockState(new BlockPos(pos.getX()+1,pos.getY(), pos.getZ()), Blocks.AIR.getDefaultState());
-                        }
-                        count++;
-                    }else{
-                        return false;
-                    }
-                }else if (count==7){
-                    if (event.getWorld().getBlockState(new BlockPos(pos.getX()-1,pos.getY(), pos.getZ())).getBlock()==blocks){
-                        event.getWorld().playEvent(2001, new BlockPos(pos.getX()-1,pos.getY(), pos.getZ()), Block.getStateId(blocks.getDefaultState()));
-                        if (shouldBreak(chance)){
-                            event.getWorld().setBlockState(new BlockPos(pos.getX()-1,pos.getY(), pos.getZ()), Blocks.AIR.getDefaultState());
-                        }
-                        return true;
-                    }else{
-                        return false;
-                    }
-                }else{
-                    for (int i=-1;i<2;i++){
-                        if (event.getWorld().getBlockState(new BlockPos(pos.getX()-i,pos.getY(), pos.getZ()+1)).getBlock()==blocks){
-                            event.getWorld().playEvent(2001, new BlockPos(pos.getX()-i,pos.getY(), pos.getZ()+1), Block.getStateId(blocks.getDefaultState()));
-                            if (shouldBreak(chance)){
-                                event.getWorld().setBlockState(new BlockPos(pos.getX()-i,pos.getY(), pos.getZ()+1), Blocks.AIR.getDefaultState());
+                                event.getWorld().setBlockState(new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()+j), Blocks.AIR.getDefaultState());
                             }
                             count++;
                         }else{
@@ -135,6 +102,6 @@ public class InWorldCrafting {
                 }
             }
         }
-        return false;
+        return true;
     }
 }
