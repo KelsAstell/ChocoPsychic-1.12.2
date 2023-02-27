@@ -35,7 +35,7 @@ public class InWorldCrafting {
         if (event.getSide() == Side.CLIENT){return;}
         ItemStack stack = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
         if(Objects.equals(stack.getItem().getRegistryName(), new ResourceLocation("minecraft", "golden_apple")) && isBlock("minecraft:enchant_table", event.getWorld().getBlockState(event.getPos()).getBlock())) {
-            checkRecipe(event,Blocks.GOLD_BLOCK, Items.GOLDEN_APPLE, 0,4,1.0);
+            checkRecipe(event,Blocks.GOLD_BLOCK, Items.GOLDEN_APPLE, 0,4,1.0, Items.GOLDEN_APPLE, 1);
         }
     }
 
@@ -49,7 +49,7 @@ public class InWorldCrafting {
         String fullPath = loc.getResourceDomain() + ":" + loc.getResourcePath();
         return fullPath.equals(unlocalizedPath);
     }
-    private static void checkRecipe(PlayerInteractEvent.LeftClickBlock event, Block blocks, Item ingredient, int meta, int required, double chance) {
+    private static void checkRecipe(PlayerInteractEvent.LeftClickBlock event, Block blocks, Item ingredient, int meta, int required, double chance,Item output, int meta1) {
         BlockPos pos = event.getPos();
         List<EntityItem> Items = event.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-2, -2, -2), pos.add(2, 2, 2)));
         for(EntityItem item:Items){
@@ -61,19 +61,17 @@ public class InWorldCrafting {
                     item.getItem().shrink(required);
                     if (consumeBlocks(event,pos,blocks,chance)){
                         Vec3d vector = item.getPositionVector();
-                        EntityItem i = new EntityItem(event.getWorld(), vector.x, vector.y, vector.z, new ItemStack(ItemList.catalyst, 1));
+                        EntityItem i = new EntityItem(event.getWorld(), vector.x, vector.y, vector.z, new ItemStack(output, 1, meta1));
                         i.setDefaultPickupDelay();
                         i.setGlowing(true);
                         i.setNoDespawn();
                         event.getWorld().spawnEntity(i);
-                        event.getWorld().playEvent(2001, pos, Block.getStateId(Blocks.ANVIL.getDefaultState()));
-                        event.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+                        event.getWorld().playSound(null,pos,SoundEvents.ENTITY_PLAYER_LEVELUP,SoundCategory.PLAYERS,1.0F,1.0F);
                         return;
                     }
                 }
             }
         }
-        event.getWorld().playSound(null, pos, SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
     private static boolean consumeBlocks (PlayerInteractEvent.LeftClickBlock event,BlockPos pos, Block blocks, double chance){
         int count=0;
