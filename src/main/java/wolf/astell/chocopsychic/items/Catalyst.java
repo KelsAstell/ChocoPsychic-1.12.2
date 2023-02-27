@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import wolf.astell.chocopsychic.Main;
-import wolf.astell.chocopsychic.init.ItemList;
+import wolf.astell.chocopsychic.init.ModItem;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class Catalyst extends Item
 		this.setCreativeTab(Main.ChocoPsychic);
 		this.setContainerItem(this);
 
-		ItemList.ITEM_LIST.add(this);
+		ModItem.ITEM_LIST.add(this);
 	}
 
 	@SideOnly(Side.CLIENT)

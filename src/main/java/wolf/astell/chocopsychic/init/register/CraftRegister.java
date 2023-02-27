@@ -12,11 +12,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import wolf.astell.chocopsychic.Main;
 import wolf.astell.chocopsychic.api.Log;
-import wolf.astell.chocopsychic.init.ItemList;
+import wolf.astell.chocopsychic.init.ModItem;
 
 public class CraftRegister {
     public static void init(){
-        GameRegistry.addShapedRecipe(new ResourceLocation("catalyst"), new ResourceLocation(Main.MODID), new ItemStack(ItemList.catalyst),
+        GameRegistry.addShapedRecipe(new ResourceLocation("catalyst"), new ResourceLocation(Main.MODID), new ItemStack(ModItem.catalyst),
                 " R ",
                 "GCG",
                 " R ",

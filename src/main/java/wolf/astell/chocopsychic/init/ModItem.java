@@ -6,7 +6,7 @@ import wolf.astell.chocopsychic.items.Catalyst;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemList{
+public class ModItem {
     public static final List<Item> ITEM_LIST = new ArrayList<>();
     public static Item catalyst;
 

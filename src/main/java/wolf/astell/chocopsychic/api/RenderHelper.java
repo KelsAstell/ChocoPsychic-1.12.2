@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import wolf.astell.chocopsychic.Main;
-import wolf.astell.chocopsychic.init.ItemList;
+import wolf.astell.chocopsychic.init.ModItem;
 
 import java.util.Objects;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
 public class RenderHelper {
     @SubscribeEvent
     public static void Render(ModelRegistryEvent event) {
-        for (Item item : ItemList.ITEM_LIST) {
+        for (Item item : ModItem.ITEM_LIST) {
             ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(Objects.requireNonNull(item.getRegistryName()), "inventory"));
         }
     }

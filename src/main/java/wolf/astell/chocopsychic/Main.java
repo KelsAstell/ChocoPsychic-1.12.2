@@ -6,7 +6,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import wolf.astell.chocopsychic.init.ItemList;
+import wolf.astell.chocopsychic.init.ModItem;
 import wolf.astell.chocopsychic.init.register.CraftRegister;
 import wolf.astell.chocopsychic.init.register.ItemRegister;
 
@@ -21,7 +21,7 @@ public class Main {
 
         @Override
         public ItemStack getTabIconItem() {
-            return new ItemStack(ItemList.catalyst);
+            return new ItemStack(ModItem.catalyst);
         }
     };
 
@@ -32,7 +32,7 @@ public class Main {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        ItemList.init();
+        ModItem.init();
         MinecraftForge.EVENT_BUS.register(new ItemRegister());
     }
 

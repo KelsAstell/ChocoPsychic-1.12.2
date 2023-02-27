@@ -19,11 +19,13 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import wolf.astell.chocopsychic.init.ItemList;
+import wolf.astell.chocopsychic.init.ModItem;
 
 import java.util.List;
 import java.util.Objects;
@@ -34,7 +36,7 @@ public class InWorldCrafting {
     public static void playerLeftClickedBlock(PlayerInteractEvent.LeftClickBlock event) {
         if (event.getSide() == Side.CLIENT){return;}
         ItemStack stack = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
-        if(Objects.equals(stack.getItem().getRegistryName(), new ResourceLocation("minecraft", "golden_apple")) && isBlock("minecraft:enchant_table", event.getWorld().getBlockState(event.getPos()).getBlock())) {
+        if(Objects.equals(stack.getItem().getRegistryName(), new ResourceLocation("minecraft", "golden_apple")) && isBlock("minecraft:enchanting_table", event.getWorld().getBlockState(event.getPos()).getBlock())) {
             checkRecipe(event,Blocks.GOLD_BLOCK, Items.GOLDEN_APPLE, 0,4,1.0, Items.GOLDEN_APPLE, 1);
         }
     }
@@ -55,19 +57,30 @@ public class InWorldCrafting {
         for(EntityItem item:Items){
             if (item.getItem().getItem().equals(ingredient) && item.getItem().getItemDamage() == meta){
                 item.setDead();
-                if (item.getItem().getCount()<required){
-                    return;
-                }else{
-                    item.getItem().shrink(required);
-                    if (consumeBlocks(event,pos,blocks,chance)){
-                        Vec3d vector = item.getPositionVector();
-                        EntityItem i = new EntityItem(event.getWorld(), vector.x, vector.y, vector.z, new ItemStack(output, 1, meta1));
-                        i.setDefaultPickupDelay();
-                        i.setGlowing(true);
-                        i.setNoDespawn();
-                        event.getWorld().spawnEntity(i);
-                        event.getWorld().playSound(null,pos,SoundEvents.ENTITY_PLAYER_LEVELUP,SoundCategory.PLAYERS,1.0F,1.0F);
+                if (item.getItem().getItem().equals(ModItem.catalyst)){
+                    if (item.getItem().getCount() < required){
+                        event.getEntityPlayer().sendMessage(new TextComponentTranslation("message.chocopsychic.insufficient_catalyst_1"));
+                        event.getEntityPlayer().sendMessage(new TextComponentString(String.valueOf(required-item.getItem().getCount())));
                         return;
+                    }
+                    else{
+                        item.getItem().shrink(required);
+                        for (EntityItem item1:Items) {
+                            if (item1.getItem().getItem().equals(ingredient) && item1.getItem().getItemDamage() == meta) {
+                                int amount = item1.getItem().getCount();
+                                item1.setDead();
+                                if (consumeBlocks(event,pos,blocks,chance)){
+                                    Vec3d vector = item1.getPositionVector();
+                                    EntityItem i = new EntityItem(event.getWorld(), vector.x, vector.y, vector.z, new ItemStack(output, amount, meta1));
+                                    i.setDefaultPickupDelay();
+                                    i.setGlowing(true);
+                                    i.setNoDespawn();
+                                    event.getWorld().spawnEntity(i);
+                                    event.getWorld().playSound(null,pos,SoundEvents.ENTITY_PLAYER_LEVELUP,SoundCategory.PLAYERS,1.0F,1.0F);
+                                    return;
+                                }
+                            }
+                        }
                     }
                 }
             }
