@@ -35,7 +35,7 @@ public class InWorldCrafting {
         if (event.getSide() == Side.CLIENT){return;}
         ItemStack stack = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
         if(Objects.equals(stack.getItem().getRegistryName(), new ResourceLocation("minecraft", "golden_apple")) && isBlock("minecraft:enchant_table", event.getWorld().getBlockState(event.getPos()).getBlock())) {
-            checkRecipe(event,Blocks.GOLD_BLOCK, Items.GOLDEN_APPLE, 0,4);
+            checkRecipe(event,Blocks.GOLD_BLOCK, Items.GOLDEN_APPLE, 0,4,1.0);
         }
     }
 
@@ -49,7 +49,7 @@ public class InWorldCrafting {
         String fullPath = loc.getResourceDomain() + ":" + loc.getResourcePath();
         return fullPath.equals(unlocalizedPath);
     }
-    private static void checkRecipe(PlayerInteractEvent.LeftClickBlock event, Block blocks, Item ingredient, int meta, int required) {
+    private static void checkRecipe(PlayerInteractEvent.LeftClickBlock event, Block blocks, Item ingredient, int meta, int required, double chance) {
         BlockPos pos = event.getPos();
         List<EntityItem> Items = event.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-2, -2, -2), pos.add(2, 2, 2)));
         for(EntityItem item:Items){
@@ -59,7 +59,7 @@ public class InWorldCrafting {
                     return;
                 }else{
                     item.getItem().shrink(required);
-                    if (consumeBlocks(event,pos,blocks)){
+                    if (consumeBlocks(event,pos,blocks,chance)){
                         Vec3d vector = item.getPositionVector();
                         EntityItem i = new EntityItem(event.getWorld(), vector.x, vector.y, vector.z, new ItemStack(ItemList.catalyst, 1));
                         i.setDefaultPickupDelay();
@@ -75,7 +75,7 @@ public class InWorldCrafting {
         }
         event.getWorld().playSound(null, pos, SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
-    private static boolean consumeBlocks (PlayerInteractEvent.LeftClickBlock event,BlockPos pos, Block blocks){
+    private static boolean consumeBlocks (PlayerInteractEvent.LeftClickBlock event,BlockPos pos, Block blocks, double chance){
         int count=0;
         while (count<8){
             if(event.getWorld().getTotalWorldTime() % 10 == 0){
@@ -83,7 +83,9 @@ public class InWorldCrafting {
                     for (int i=-1;i<2;i++){
                         if (event.getWorld().getBlockState(new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()-1)).getBlock()==blocks){
                             event.getWorld().playEvent(2001, new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()-1), Block.getStateId(blocks.getDefaultState()));
-                            event.getWorld().setBlockState(new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()-1), Blocks.AIR.getDefaultState());
+                            if (shouldBreak(chance)){
+                                event.getWorld().setBlockState(new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()-1), Blocks.AIR.getDefaultState());
+                            }
                             count++;
                         }else{
                             return false;
@@ -92,7 +94,9 @@ public class InWorldCrafting {
                 }else if (count==3){
                     if (event.getWorld().getBlockState(new BlockPos(pos.getX()+1,pos.getY(), pos.getZ())).getBlock()==blocks){
                         event.getWorld().playEvent(2001, new BlockPos(pos.getX()+1,pos.getY(), pos.getZ()), Block.getStateId(blocks.getDefaultState()));
-                        event.getWorld().setBlockState(new BlockPos(pos.getX()+1,pos.getY(), pos.getZ()), Blocks.AIR.getDefaultState());
+                        if (shouldBreak(chance)){
+                            event.getWorld().setBlockState(new BlockPos(pos.getX()+1,pos.getY(), pos.getZ()), Blocks.AIR.getDefaultState());
+                        }
                         count++;
                     }else{
                         return false;
@@ -100,7 +104,9 @@ public class InWorldCrafting {
                 }else if (count==7){
                     if (event.getWorld().getBlockState(new BlockPos(pos.getX()-1,pos.getY(), pos.getZ())).getBlock()==blocks){
                         event.getWorld().playEvent(2001, new BlockPos(pos.getX()-1,pos.getY(), pos.getZ()), Block.getStateId(blocks.getDefaultState()));
-                        event.getWorld().setBlockState(new BlockPos(pos.getX()-1,pos.getY(), pos.getZ()), Blocks.AIR.getDefaultState());
+                        if (shouldBreak(chance)){
+                            event.getWorld().setBlockState(new BlockPos(pos.getX()-1,pos.getY(), pos.getZ()), Blocks.AIR.getDefaultState());
+                        }
                         return true;
                     }else{
                         return false;
@@ -109,7 +115,9 @@ public class InWorldCrafting {
                     for (int i=-1;i<2;i++){
                         if (event.getWorld().getBlockState(new BlockPos(pos.getX()-i,pos.getY(), pos.getZ()+1)).getBlock()==blocks){
                             event.getWorld().playEvent(2001, new BlockPos(pos.getX()-i,pos.getY(), pos.getZ()+1), Block.getStateId(blocks.getDefaultState()));
-                            event.getWorld().setBlockState(new BlockPos(pos.getX()-i,pos.getY(), pos.getZ()+1), Blocks.AIR.getDefaultState());
+                            if (shouldBreak(chance)){
+                                event.getWorld().setBlockState(new BlockPos(pos.getX()-i,pos.getY(), pos.getZ()+1), Blocks.AIR.getDefaultState());
+                            }
                             count++;
                         }else{
                             return false;
