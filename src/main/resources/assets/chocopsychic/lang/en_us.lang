@@ -1,6 +1,6 @@
 itemGroup.ChocoPsychic=Choco Psychic
 
 item.catalyst.name=Catalyst
-item.catalyst.description=Left Click on an Enchant Table to Start.
+item.catalyst.desc=Consumed During The Psychic.
 
 message.chocopsychic.insufficient_catalyst_1=§cNeed More Catalyst. Need Extra:
