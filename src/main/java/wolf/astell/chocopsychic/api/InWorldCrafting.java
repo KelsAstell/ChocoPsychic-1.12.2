@@ -55,30 +55,27 @@ public class InWorldCrafting {
         BlockPos pos = event.getPos();
         List<EntityItem> Items = event.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-2, -2, -2), pos.add(2, 2, 2)));
         for(EntityItem item:Items){
-            if (item.getItem().getItem().equals(ingredient) && item.getItem().getItemDamage() == meta){
-                item.setDead();
-                if (item.getItem().getItem().equals(ModItem.catalyst)){
-                    if (item.getItem().getCount() < required){
-                        event.getEntityPlayer().sendMessage(new TextComponentTranslation("message.chocopsychic.insufficient_catalyst_1"));
-                        event.getEntityPlayer().sendMessage(new TextComponentString(String.valueOf(required-item.getItem().getCount())));
-                        return;
-                    }
-                    else{
-                        item.getItem().shrink(required);
-                        for (EntityItem item1:Items) {
-                            if (item1.getItem().getItem().equals(ingredient) && item1.getItem().getItemDamage() == meta) {
-                                int amount = item1.getItem().getCount();
-                                item1.setDead();
-                                if (consumeBlocks(event,pos,blocks,chance)){
-                                    Vec3d vector = item1.getPositionVector();
-                                    EntityItem i = new EntityItem(event.getWorld(), vector.x, vector.y, vector.z, new ItemStack(output, amount, meta1));
-                                    i.setDefaultPickupDelay();
-                                    i.setGlowing(true);
-                                    i.setNoDespawn();
-                                    event.getWorld().spawnEntity(i);
-                                    event.getWorld().playSound(null,pos,SoundEvents.ENTITY_PLAYER_LEVELUP,SoundCategory.PLAYERS,1.0F,1.0F);
-                                    return;
-                                }
+            if (item.getItem().getItem().equals(ModItem.catalyst)){
+                if (item.getItem().getCount() < required){
+                    event.getEntityPlayer().sendMessage(new TextComponentTranslation("message.chocopsychic.insufficient_catalyst_1"));
+                    event.getEntityPlayer().sendMessage(new TextComponentString(String.valueOf(required-item.getItem().getCount())));
+                    return;
+                }
+                else{
+                    item.getItem().shrink(required);
+                    for (EntityItem item1:Items) {
+                        if (item1.getItem().getItem().equals(ingredient) && item1.getItem().getItemDamage() == meta) {
+                            int amount = item1.getItem().getCount();
+                            item1.setDead();
+                            if (consumeBlocks(event,pos,blocks,chance)){
+                                Vec3d vector = item1.getPositionVector();
+                                EntityItem i = new EntityItem(event.getWorld(), vector.x, vector.y, vector.z, new ItemStack(output, amount, meta1));
+                                i.setDefaultPickupDelay();
+                                i.setGlowing(true);
+                                i.setNoDespawn();
+                                event.getWorld().spawnEntity(i);
+                                event.getWorld().playSound(null,pos,SoundEvents.ENTITY_PLAYER_LEVELUP,SoundCategory.PLAYERS,1.0F,1.0F);
+                                return;
                             }
                         }
                     }
@@ -99,6 +96,7 @@ public class InWorldCrafting {
                             }
                             count++;
                         }else{
+
                             return false;
                         }
                     }
