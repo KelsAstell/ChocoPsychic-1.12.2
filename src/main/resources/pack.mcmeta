@@ -1,7 +1,6 @@
 {
     "pack": {
-        "description": "choco",
-        "pack_format": 3,
-        "_comment": ""
+        "description": "chocopsychic",
+        "pack_format": 3
     }
 }

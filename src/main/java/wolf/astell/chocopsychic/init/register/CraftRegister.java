@@ -6,7 +6,6 @@ GitHub: https://github.com/KelsAstell
 */
 package wolf.astell.chocopsychic.init.register;
 
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -17,24 +16,13 @@ import wolf.astell.chocopsychic.init.ItemList;
 
 public class CraftRegister {
     public static void init(){
-        DogeCraftRegister.init();
-        GameRegistry.addShapedRecipe(new ResourceLocation("world_chocolate"), new ResourceLocation(Main.MODID), new ItemStack(ItemList.worldChocolate),
-                "AAA",
-                "DBD",
-                "CDC",
-                'A', Blocks.GRASS,
-                'B', Items.NETHER_STAR,
-                'C', Blocks.END_STONE,
-                'D', ItemList.foodGoldenChocolate);
-        if (SpecialDays.getToday().equals("VALENTINES_DAY")){
-            GameRegistry.addShapedRecipe(new ResourceLocation("love_chocolate"), new ResourceLocation(Main.MODID), new ItemStack(ItemList.loveChocolate),
-                    "AAA",
-                    "ABA",
-                    "ACA",
-                    'A', Items.PAPER,
-                    'C', Items.DIAMOND,
-                    'B', ItemList.foodChocolate);
-        }
+        GameRegistry.addShapedRecipe(new ResourceLocation("catalyst"), new ResourceLocation(Main.MODID), new ItemStack(ItemList.catalyst),
+                " R ",
+                "GCG",
+                " R ",
+                'R', Items.REDSTONE,
+                'G', Items.GOLD_INGOT,
+                'C', wolf.astell.choco.init.ItemList.foodChocolate);
         Log.i("Crafting Recipe Inject Succeed.");
     }
 }
