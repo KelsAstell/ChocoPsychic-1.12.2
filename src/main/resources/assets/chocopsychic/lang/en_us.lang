@@ -3,4 +3,5 @@ itemGroup.ChocoPsychic=Choco Psychic
 item.catalyst.name=Catalyst
 item.catalyst.desc=Consumed During The Psychic.
 
-message.chocopsychic.insufficient_catalyst_1=§cNeed More Catalyst. Need Extra:
+message.chocopsychic.insufficient_catalyst=§cNeed More Catalyst. Need Extra:
+message.chocopsychic.insufficient_blocks=

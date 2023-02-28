@@ -12,7 +12,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemEnchantedBook;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -36,8 +39,13 @@ public class InWorldCrafting {
     public static void playerLeftClickedBlock(PlayerInteractEvent.LeftClickBlock event) {
         if (event.getSide() == Side.CLIENT){return;}
         ItemStack stack = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
-        if(Objects.equals(stack.getItem().getRegistryName(), new ResourceLocation("minecraft", "golden_apple")) && isBlock("minecraft:enchanting_table", event.getWorld().getBlockState(event.getPos()).getBlock())) {
-            checkRecipe(event,Blocks.GOLD_BLOCK, Items.GOLDEN_APPLE, 0,4,1.0, Items.GOLDEN_APPLE, 1);
+        if (isBlock("minecraft:enchanting_table", event.getWorld().getBlockState(event.getPos()).getBlock())){
+            if(Objects.equals(stack.getItem().getRegistryName(), new ResourceLocation("minecraft", "golden_apple"))) {
+                checkRecipe(event,Blocks.GOLD_BLOCK, Items.GOLDEN_APPLE, 0,4,1.0, Items.GOLDEN_APPLE, 1);
+            }
+            if(Objects.equals(stack.getItem().getRegistryName(), new ResourceLocation("minecraft", "enchanted_book"))) {
+                checkEnchantRecipe(event,Blocks.BOOKSHELF, 8);
+            }
         }
     }
 
@@ -57,7 +65,7 @@ public class InWorldCrafting {
         for(EntityItem item:Items){
             if (item.getItem().getItem().equals(ModItem.catalyst)){
                 if (item.getItem().getCount() < required){
-                    event.getEntityPlayer().sendMessage(new TextComponentTranslation("message.chocopsychic.insufficient_catalyst_1"));
+                    event.getEntityPlayer().sendMessage(new TextComponentTranslation("message.chocopsychic.insufficient_catalyst"));
                     event.getEntityPlayer().sendMessage(new TextComponentString(String.valueOf(required-item.getItem().getCount())));
                     return;
                 }
@@ -66,10 +74,11 @@ public class InWorldCrafting {
                     for (EntityItem item1:Items) {
                         if (item1.getItem().getItem().equals(ingredient) && item1.getItem().getItemDamage() == meta) {
                             int amount = item1.getItem().getCount();
-                            item1.setDead();
-                            if (consumeBlocks(event,pos,blocks,chance)){
+                            if (checkBlocks(event,pos,blocks)){
+                                item1.setDead();
+                                consumeBlocks(event,pos,blocks,chance);
                                 Vec3d vector = item1.getPositionVector();
-                                EntityItem i = new EntityItem(event.getWorld(), vector.x, vector.y, vector.z, new ItemStack(output, amount, meta1));
+                                EntityItem i = new EntityItem(event.getWorld(), vector.x, vector.y + 0.5, vector.z, new ItemStack(output, amount, meta1));
                                 i.setDefaultPickupDelay();
                                 i.setGlowing(true);
                                 i.setNoDespawn();
@@ -77,23 +86,51 @@ public class InWorldCrafting {
                                 event.getWorld().playSound(null,pos,SoundEvents.ENTITY_PLAYER_LEVELUP,SoundCategory.PLAYERS,1.0F,1.0F);
                                 return;
                             }
+                            event.getEntityPlayer().sendMessage(new TextComponentTranslation("message.chocopsychic.insufficient_blocks"));
                         }
                     }
                 }
             }
         }
     }
-    private static boolean consumeBlocks (PlayerInteractEvent.LeftClickBlock event,BlockPos pos, Block blocks, double chance){
+    private static void checkEnchantRecipe(PlayerInteractEvent.LeftClickBlock event, Block blocks, int required) {
+        BlockPos pos = event.getPos();
+        List<EntityItem> Items = event.getWorld().getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-2, -2, -2), pos.add(2, 2, 2)));
+        for(EntityItem item:Items){
+            if (item.getItem().getItem().equals(ModItem.catalyst)){
+                if (item.getItem().getCount() < required){
+                    event.getEntityPlayer().sendMessage(new TextComponentTranslation("message.chocopsychic.insufficient_catalyst"));
+                    event.getEntityPlayer().sendMessage(new TextComponentString(String.valueOf(required-item.getItem().getCount())));
+                    return;
+                }
+                else{
+                    item.getItem().shrink(required);
+                    for(EntityItem entity : Items) {
+                        ItemStack item1 = entity.getItem();
+                        if(item1.getItem() == net.minecraft.init.Items.ENCHANTED_BOOK && checkBlocks(event,pos,blocks)) {
+                            NBTTagList enchants = ItemEnchantedBook.getEnchantments(item1);
+                            if(enchants.tagCount() > 0) {
+                                NBTTagCompound enchant = enchants.getCompoundTagAt(0);
+                                short enchantLvl = enchant.getShort("lvl");
+                                if (enchantLvl<10){
+                                    enchant.setShort("lvl", (short) (enchantLvl+1));
+                                    entity.setGlowing(true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+    private static boolean checkBlocks(PlayerInteractEvent.LeftClickBlock event, BlockPos pos, Block blocks){
         int count=0;
         while (count<8){
             for (int i=-1;i<2;i++){
                 for (int j=-1;j<2;j++){
                     if (!(i==0 && j==0)){
                         if (event.getWorld().getBlockState(new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()+j)).getBlock()==blocks){
-                            event.getWorld().playEvent(2001, new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()+j), Block.getStateId(blocks.getDefaultState()));
-                            if (shouldBreak(chance)){
-                                event.getWorld().setBlockState(new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()+j), Blocks.AIR.getDefaultState());
-                            }
                             count++;
                         }else{
                             return false;
@@ -103,5 +140,18 @@ public class InWorldCrafting {
             }
         }
         return true;
+    }
+
+    private static void consumeBlocks(PlayerInteractEvent.LeftClickBlock event, BlockPos pos, Block blocks, double chance){
+        for (int i=-1;i<2;i++){
+            for (int j=-1;j<2;j++){
+                if (!(i==0 && j==0)){
+                    event.getWorld().playEvent(2001, new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()+j), Block.getStateId(blocks.getDefaultState()));
+                    if (shouldBreak(chance)){
+                        event.getWorld().setBlockState(new BlockPos(pos.getX()+i,pos.getY(), pos.getZ()+j), Blocks.AIR.getDefaultState());
+                    }
+                }
+            }
+        }
     }
 }
