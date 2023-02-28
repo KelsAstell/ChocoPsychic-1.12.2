@@ -46,6 +46,9 @@ public class InWorldCrafting {
             if(Objects.equals(stack.getItem().getRegistryName(), new ResourceLocation("minecraft", "enchanted_book"))) {
                 checkEnchantRecipe(event,Blocks.BOOKSHELF, 8);
             }
+            if(Objects.equals(stack.getItem().getRegistryName(), new ResourceLocation("minecraft", "egg"))) {
+                checkRecipe(event,Blocks.OBSIDIAN, Items.EGG, 0,64,1.0, Item.getItemFromBlock(Blocks.DRAGON_EGG), 0);
+            }
         }
     }
 
